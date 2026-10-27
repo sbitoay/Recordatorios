@@ -1,0 +1,149 @@
+package com.monaco.recordatorios.ui
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.monaco.recordatorios.data.DatosSimulados
+import com.monaco.recordatorios.model.Recordatorio
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PantallaRecordatorios(modifier: Modifier = Modifier) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Mis Recordatorios", fontWeight = FontWeight.Bold) },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                )
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "Lista de tareas (${DatosSimulados.listaRecordatorios.size})",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(bottom = 12.dp)
+            )
+
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                items(DatosSimulados.listaRecordatorios) { recordatorio ->
+                    ItemRecordatorio(recordatorio = recordatorio)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ItemRecordatorio(recordatorio: Recordatorio) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = recordatorio.titulo,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    modifier = Modifier.weight(1f)
+                )
+
+                Box(
+                    modifier = Modifier
+                        .background(
+                            color = recordatorio.categoria.color,
+                            shape = RoundedCornerShape(4.dp)
+                        )
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    Text(
+                        text = recordatorio.categoria.nombre,
+                        color = Color.White,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+
+            recordatorio.descripcion?.let { desc ->
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = desc,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Gray
+                )
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Prioridad: ${recordatorio.prioridad}",
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.primary
+                )
+
+                Text(
+                    text = if (recordatorio.completado) "Estado: Completado" else "Estado: Pendiente",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = if (recordatorio.completado) Color(0xFF388E3C) else Color(0xFFD32F2F)
+                )
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewPantallaRecordatorios() {
+    MaterialTheme {
+        PantallaRecordatorios()
+    }
+}
